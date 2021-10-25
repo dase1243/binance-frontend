@@ -23,8 +23,7 @@ export default function Login({setToken}) {
     }
 
     async function loginUser(credentials) {
-        // return fetch('https://binance-hack.herokuapp.com/api/login', {
-        return fetch('http://localhost:5000/api/login', {
+        return fetch('https://binance-hack.herokuapp.com/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
