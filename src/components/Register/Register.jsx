@@ -28,7 +28,8 @@ export default function Register() {
     }
 
     async function registerUser(newUserBody) {
-        return fetch('https://binance-hack.herokuapp.com/api/login', {
+        return fetch('https://binance-hack.herokuapp.com/api/register', {
+        // return fetch('http://localhost:5000/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
