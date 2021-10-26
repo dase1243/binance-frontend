@@ -56,6 +56,7 @@ export default function Register() {
         console.log(message)
         if(success) {
             history.push("/login");
+            alert("success. Please login with your credentials")
         } else {
             alert(message)
         }
