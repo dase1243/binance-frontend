@@ -45,9 +45,9 @@ export default function Login({setToken}) {
 
         const {isAuth, message} = response
         if (isAuth) {
-            setToken(response);
-            localStorage.setItem('token', JSON.stringify(response));
             localStorage.setItem('email', JSON.stringify(formState.emailInput));
+            localStorage.setItem('token', JSON.stringify(response));
+            setToken(response);
         } else {
             alert(message)
         }
