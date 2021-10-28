@@ -47,6 +47,7 @@ export default function Login({setToken}) {
         if (isAuth) {
             setToken(response);
             localStorage.setItem('token', JSON.stringify(response));
+            localStorage.setItem('email', JSON.stringify(formState.emailInput));
         } else {
             alert(message)
         }
