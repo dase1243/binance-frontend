@@ -1,17 +1,15 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './App.css';
 import Login from "../src/components/Login/Login";
-import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+import {Switch, Route} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
 
 const App = () => {
-    const [token, setToken] = useState();
-    const [email, setEmail] = useState();
+    const [token, setToken] = React.useState();
+    const [email, setEmail] = React.useState();
     const tokenLocalStorage = localStorage.getItem('token');
 
-    console.log(!token)
-    console.log(!tokenLocalStorage)
     if (!token && !tokenLocalStorage) {
         return (
             <div className="App">

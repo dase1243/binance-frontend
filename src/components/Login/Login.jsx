@@ -11,9 +11,10 @@ export default function Login({setToken, setEmail}) {
         rememberStatusInput: false
     })
 
-    // useEffect(() => {
-    //     console.log(formState)
-    // }, [formState])
+    const [formAlert, setFormAlert] = React.useState({
+        message: '',
+        status: false
+    });
 
     const onChangeInput = (e) => {
         setFormState({
@@ -23,8 +24,8 @@ export default function Login({setToken, setEmail}) {
     }
 
     async function loginUser(credentials) {
-        return fetch('https://binance-hack.herokuapp.com/api/login', {
-            // return fetch('http://localhost:5000/api/login', {
+        // return fetch('https://binance-hack.herokuapp.com/api/user/login', {
+        return fetch('http://localhost:5000/api/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -46,10 +47,14 @@ export default function Login({setToken, setEmail}) {
         const {isAuth, message} = response
         if (isAuth) {
             localStorage.setItem('token', JSON.stringify(response));
-            setToken((_) => response);
-            setEmail((_) => formState.emailInput)
+            console.log("formState: ", formState);
+            setToken(response);
+            setEmail(formState.emailInput)
         } else {
-            alert(message)
+            setFormAlert({
+                message,
+                status: true
+            })
         }
     }
 
@@ -67,6 +72,7 @@ export default function Login({setToken, setEmail}) {
                             name="emailInput"
                             className="form-control"
                             placeholder="Enter email"
+                            required
                         />
                     </div>
                 </div>
@@ -80,11 +86,22 @@ export default function Login({setToken, setEmail}) {
                             name="passwordInput"
                             className="form-control"
                             placeholder="Enter password"
+                            required
                         />
                     </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block">Submit</button>
+                <button
+                    type="submit"
+                    className="btn btn-primary btn-block mb-3"
+                >
+                    Submit
+                </button>
+                {formAlert.status ?
+                    <div className="alert alert-danger text-break" role="alert">
+                        {formAlert.message}
+                    </div>
+                    : <></>}
             </form>
             <Link to={"./register"}>
                 Register
