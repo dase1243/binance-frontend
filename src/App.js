@@ -1,22 +1,17 @@
 import React, {useState} from 'react';
 import './App.css';
 import Login from "../src/components/Login/Login";
-import {Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
 
 const App = () => {
     const [token, setToken] = useState();
+    const [email, setEmail] = useState();
     const tokenLocalStorage = localStorage.getItem('token');
 
-    React.useEffect(() => {
-        const iframe = document.querySelector("iframe");
-
-        if (iframe.getAttribute("id") === "iframe") {
-            iframe.contentWindow.postMessage('my new email', 'userEmail');
-        }
-    }, [token])
-
+    console.log(!token)
+    console.log(!tokenLocalStorage)
     if (!token && !tokenLocalStorage) {
         return (
             <div className="App">
@@ -24,7 +19,7 @@ const App = () => {
                     <div className="auth-inner">
                         <Switch>
                             <Route exact path='/'>
-                                <Login setToken={setToken}/>
+                                <Login setToken={setToken} setEmail={setEmail}/>
                             </Route>
                             <Route exact path='/login'>
                                 <Login setToken={setToken}/>
@@ -42,7 +37,11 @@ const App = () => {
     return (
         <div className="wrapper">
             <iframe
-                id="iframe"
+                onLoad={() => {
+                    let iframe = document.getElementById('my_iframe').contentWindow;
+                    iframe.postMessage(email, "*");
+                }}
+                id="my_iframe"
                 src="https://infinite-heroes.herokuapp.com/"
                 width={window.innerWidth}
                 height={window.innerWidth}

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './Login.css';
 import {Link} from 'react-router-dom'
 
-export default function Login({setToken}) {
+export default function Login({setToken, setEmail}) {
 
     const [formState, setFormState] = React.useState({
         emailInput: '',
@@ -20,15 +20,11 @@ export default function Login({setToken}) {
             ...formState,
             [e.target.name]: e.target.value,
         })
-
-        if(e.target.name === 'emailInput') {
-            localStorage.setItem('email', JSON.stringify(formState.emailInput));
-        }
     }
 
     async function loginUser(credentials) {
         return fetch('https://binance-hack.herokuapp.com/api/login', {
-        // return fetch('http://localhost:5000/api/login', {
+            // return fetch('http://localhost:5000/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -50,7 +46,8 @@ export default function Login({setToken}) {
         const {isAuth, message} = response
         if (isAuth) {
             localStorage.setItem('token', JSON.stringify(response));
-            setToken(response);
+            setToken((_) => response);
+            setEmail((_) => formState.emailInput)
         } else {
             alert(message)
         }
@@ -64,16 +61,26 @@ export default function Login({setToken}) {
                 <div className="mb-3">
                     <div className="form-group">
                         <label>Email address</label>
-                        <input onChange={onChangeInput} type="email" name="emailInput" className="form-control"
-                               placeholder="Enter email"/>
+                        <input
+                            onChange={onChangeInput}
+                            type="email"
+                            name="emailInput"
+                            className="form-control"
+                            placeholder="Enter email"
+                        />
                     </div>
                 </div>
 
                 <div className="mb-3">
                     <div className="form-group">
                         <label>Password</label>
-                        <input onChange={onChangeInput} type="password" name="passwordInput" className="form-control"
-                               placeholder="Enter password"/>
+                        <input
+                            onChange={onChangeInput}
+                            type="password"
+                            name="passwordInput"
+                            className="form-control"
+                            placeholder="Enter password"
+                        />
                     </div>
                 </div>
 
