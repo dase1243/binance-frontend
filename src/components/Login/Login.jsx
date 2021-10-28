@@ -20,6 +20,10 @@ export default function Login({setToken}) {
             ...formState,
             [e.target.name]: e.target.value,
         })
+
+        if(e.target.name === 'emailInput') {
+            localStorage.setItem('email', JSON.stringify(formState.emailInput));
+        }
     }
 
     async function loginUser(credentials) {
@@ -45,7 +49,6 @@ export default function Login({setToken}) {
 
         const {isAuth, message} = response
         if (isAuth) {
-            localStorage.setItem('email', JSON.stringify(formState.emailInput));
             localStorage.setItem('token', JSON.stringify(response));
             setToken(response);
         } else {
