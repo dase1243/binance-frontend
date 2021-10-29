@@ -24,8 +24,8 @@ export default function Login({setToken, setEmail}) {
     }
 
     async function loginUser(credentials) {
-        // return fetch('https://binance-hack.herokuapp.com/api/user/login', {
-            return fetch('http://localhost:5000/api/user/login', {
+        return fetch('https://binance-hack.herokuapp.com/api/user/login', {
+        // return fetch('http://localhost:5000/api/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -46,10 +46,11 @@ export default function Login({setToken, setEmail}) {
 
         const {isAuth, message} = response
         if (isAuth) {
-            localStorage.setItem('token', JSON.stringify(response));
-            console.log("formState: ", formState);
             setToken(response);
+            localStorage.setItem('token', JSON.stringify(response));
+
             setEmail(formState.emailInput)
+            localStorage.setItem('email', JSON.stringify(formState.emailInput));
         } else {
             setFormAlert({
                 message,

@@ -19,8 +19,8 @@ export default function TokenMint() {
         const params = Object.fromEntries(urlSearchParams.entries());
         console.log(params)
 
-        // axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
-        axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
+        axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
+        // axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
             .then(res => {
                 console.log(res.data)
                 if (!res.data.success) {
