@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import PropTypes from 'prop-types';
 import './Register.css';
 import {Link, useHistory} from 'react-router-dom'
 import Web3 from 'web3'

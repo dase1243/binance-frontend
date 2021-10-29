@@ -4,13 +4,27 @@ import Login from "../src/components/Login/Login";
 import {Switch, Route} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
+import TokenMint from "./components/TokenMint/TokenMint";
 
 const App = () => {
     const [token, setToken] = React.useState();
     const [email, setEmail] = React.useState();
     const tokenLocalStorage = localStorage.getItem('token');
 
+    React.useEffect(() => {
+        window.addEventListener("message", receiveMessage);
+
+        function receiveMessage(event) {
+            if (event.origin.includes("infinite-heroes.herokuapp.com") || event.origin.includes("localhost:3000")) {
+                if (event.data.printingEvent) {
+                    window.open(`/tokenMint?modelId=${event.data.modelId}`, "_blank")
+                }
+            }
+        }
+    }, [])
+
     if (!token && !tokenLocalStorage) {
+    // if (!token) {
         return (
             <div className="App">
                 <div className="auth-wrapper">
@@ -33,19 +47,32 @@ const App = () => {
     }
 
     return (
-        <div className="wrapper">
-            <iframe
-                onLoad={() => {
-                    let iframe = document.getElementById('my_iframe').contentWindow;
-                    iframe.postMessage(email, "*");
-                }}
-                id="my_iframe"
-                src="https://infinite-heroes.herokuapp.com/"
-                width={window.innerWidth}
-                height={window.innerWidth}
-                scrolling="no"
-            />
-        </div>
+        <Switch>
+            <Route exact path='/'>
+                <div className="wrapper">
+                    <iframe
+                        onLoad={() => {
+                            let iframe = document.getElementById('my_iframe').contentWindow;
+                            iframe.postMessage(email, "*");
+                        }}
+                        id="my_iframe"
+                        src="https://infinite-heroes.herokuapp.com/"
+                        width={window.innerWidth}
+                        height={window.innerWidth}
+                        scrolling="no"
+                    />
+                </div>
+            </Route>
+            <Route exact path='/tokenMint'>
+                <div className="App">
+                    <div className="auth-wrapper">
+                        <div className="auth-inner">
+                            <TokenMint/>
+                        </div>
+                    </div>
+                </div>
+            </Route>
+        </Switch>
     );
 }
 
