@@ -13,7 +13,11 @@ const App = () => {
     const tokenLocalStorage = localStorage.getItem('token');
 
     React.useEffect(() => {
-        if ((!email || email === '') && localStorage.getItem('email')) {
+        if ((!email || email === '')) {
+            setEmailApprove((_) => false)
+        }
+
+        if (localStorage.getItem('email')) {
             return fetch('https://binance-hack.herokuapp.com/api/user/getUserByEmail/' + localStorage.getItem('email'), {
                 // return fetch('http://localhost:5000/api/user/getUserByEmail/' + email, {
                 method: 'GET',
@@ -43,7 +47,7 @@ const App = () => {
         }
     }, [])
 
-    if (!token && !tokenLocalStorage && !emailApprove) {
+    if ((!token && !tokenLocalStorage) || !emailApprove) {
         // if (!token) {
         return (
             <div className="App">
