@@ -8,32 +8,8 @@ import TokenMint from "./components/TokenMint/TokenMint";
 
 const App = () => {
     const [token, setToken] = React.useState();
-    const [email, setEmail] = React.useState();
-    const [emailApprove, setEmailApprove] = React.useState(false);
+    const [email, setEmail] = React.useState(localStorage.getItem('email'));
     const tokenLocalStorage = localStorage.getItem('token');
-
-    React.useEffect(() => {
-        if ((!email || email === '')) {
-            setEmailApprove((_) => false)
-        }
-
-        if (localStorage.getItem('email')) {
-            return fetch('https://binance-hack.herokuapp.com/api/user/getUserByEmail/' + localStorage.getItem('email'), {
-                // return fetch('http://localhost:5000/api/user/getUserByEmail/' + email, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(data => {
-                    if (data.success) {
-                        setEmailApprove((_) => true)
-                    } else {
-                        setEmailApprove((_) => false)
-                    }
-                })
-        }
-    }, [])
 
     React.useEffect(() => {
         window.addEventListener("message", receiveMessage);
@@ -47,7 +23,7 @@ const App = () => {
         }
     }, [])
 
-    if ((!token && !tokenLocalStorage) || !emailApprove) {
+    if (!token && !tokenLocalStorage) {
         // if (!token) {
         return (
             <div className="App">
