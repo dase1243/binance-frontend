@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Login from "../src/components/Login/Login";
-import {Switch, Route} from "react-router-dom";
+import {Switch, Route, Link} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
 import TokenMint from "./components/TokenMint/TokenMint";
@@ -38,6 +38,16 @@ const App = () => {
                             </Route>
                             <Route exact path='/register'>
                                 <Register/>
+                            </Route>
+                            <Route exact path='/*'>
+                                <div className='app__login_alert'>
+                                    <div className="alert alert-danger text-break mb-3" role="alert">
+                                        Please Login to see the page
+                                    </div>
+                                    <Link className="btn btn-primary" to={"/login"}>
+                                        Login
+                                    </Link>
+                                </div>
                             </Route>
                         </Switch>
                     </div>

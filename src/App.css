@@ -28,3 +28,10 @@ iframe {
     height: 100vh;        /* Viewport-relative units */
     width: 100vw;
 }
+
+.app__login_alert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
