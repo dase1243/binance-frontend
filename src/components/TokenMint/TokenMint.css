@@ -5,3 +5,8 @@
 .btn__mint {
     text-align: center;
 }
+
+.token_mint__navigation {
+    display: flex;
+    justify-content: space-between;
+}

@@ -5,6 +5,7 @@ import {Switch, Route, Link} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
 import TokenMint from "./components/TokenMint/TokenMint";
+import NftListing from "./components/NftListing/NftListing";
 
 const App = () => {
     const [token, setToken] = React.useState();
@@ -79,6 +80,13 @@ const App = () => {
                         <div className="auth-inner">
                             <TokenMint/>
                         </div>
+                    </div>
+                </div>
+            </Route>
+            <Route exact path='/nftList'>
+                <div className="App">
+                    <div className="auth-wrapper">
+                        <NftListing/>
                     </div>
                 </div>
             </Route>

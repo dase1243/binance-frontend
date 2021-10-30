@@ -26,7 +26,7 @@ export default function TokenMint() {
         console.log(params)
 
         axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
-        // axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
+            // axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
             .then(res => {
                 console.log('res.data: ', res.data)
                 console.log('res: ', res)
@@ -107,9 +107,14 @@ export default function TokenMint() {
                     :
                     <></>
             }
-            <Link to={"./"}>
-                Home
-            </Link>
+            <div className="token_mint__navigation">
+                <Link to={"./"}>
+                    Home
+                </Link>
+                <Link to={"./nftList"}>
+                    See all my NFTs
+                </Link>
+            </div>
         </div>
     );
 }
