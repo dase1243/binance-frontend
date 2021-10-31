@@ -25,8 +25,8 @@ export default function TokenMint() {
         const params = Object.fromEntries(urlSearchParams.entries());
         console.log(params)
 
-        // axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
-            axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
+        axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
+            // axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
             .then(res => {
                 console.log('res.data: ', res.data)
                 console.log('res: ', res)
@@ -63,8 +63,8 @@ export default function TokenMint() {
             const web3 = new Web3(window.ethereum);
 
             const contract = new web3.eth.Contract(nftAbi, process.env.REACT_APP_NFT_CONTRACT_ADDR);
-            // const uri = `https://binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
-            const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
+            const uri = `https://binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
+            // const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
 
             await contract.methods.awardItem(tokenInfo.walletAddress, uri).send({from: tokenInfo.walletAddress});
         }
