@@ -13,7 +13,8 @@ export default function Register() {
         emailInput: '',
         passwordInput: '',
         passwordRepeatInput: '',
-        rememberStatusInput: false
+        rememberStatusInput: false,
+        walletAddress: ''
     })
 
     useEffect(() => {
@@ -22,6 +23,25 @@ export default function Register() {
             setMetamaskConnection((_) => false)
         }
     });
+
+    const clickMetaMaskButton = async (e) => {
+        e.preventDefault()
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+
+            try {
+                // Request account access if needed
+                await window.ethereum.enable();
+                // Accounts now exposed
+                setMetamaskConnection((_) => true);
+                await web3.eth.getAccounts()
+                    .then(data => setMetamaskChosenAddress((_) => data[0]));
+                return web3;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
 
     const [formAlert, setFormAlert] = React.useState({
         message: '',
@@ -42,7 +62,13 @@ export default function Register() {
                     // Accounts now exposed
                     setMetamaskConnection((_) => true);
                     await web3.eth.getAccounts()
-                        .then(data => setMetamaskChosenAddress((_) => data[0]));
+                        .then(data => {
+                            setFormState({
+                                ...formState,
+                                walletAddress: data[0]
+                            })
+                            setMetamaskChosenAddress((_) => data[0])
+                        });
                     return web3;
                 } catch (error) {
                     console.error(error);
@@ -59,8 +85,8 @@ export default function Register() {
     }
 
     async function registerUser(newUserBody) {
-        return fetch('https://binance-hack.herokuapp.com/api/user/register', {
-        // return fetch('http://localhost:5000/api/user/register', {
+        // return fetch('https://binance-hack.herokuapp.com/api/user/register', {
+        return fetch('http://localhost:5000/api/user/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,6 +106,7 @@ export default function Register() {
             email: formState.emailInput,
             password: formState.passwordInput,
             password_repeat: formState.passwordRepeatInput,
+            walletAddress: formState.walletAddress,
         });
 
         console.log(message)
@@ -197,6 +224,9 @@ export default function Register() {
                     </div> :
                     <div className="alert alert-danger text-break" role="alert">
                         Please connect you Metamask Account
+                        <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
+                            Connect Metamask
+                        </button>
                     </div>}
                 {formAlert.status ?
                     <div className="alert alert-danger text-break" role="alert">
