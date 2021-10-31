@@ -9,7 +9,7 @@ import NftListing from "./components/NftListing/NftListing";
 
 const App = () => {
     const [token, setToken] = React.useState();
-    const [email, setEmail] = React.useState(localStorage.getItem('email'));
+    const [email, setEmail] = React.useState();
     const tokenLocalStorage = localStorage.getItem('token');
 
     React.useEffect(() => {
