@@ -43,7 +43,7 @@ export default function TokenMint() {
                             description: res.data.model.description,
                             walletAddress: res.data.model.user.walletAddress,
                             modelId: params.modelId,
-                            imageUrl: res.data.model.nft_image,
+                            imageUrl: res.data.model.base_image,
                             // imageUrl: `http://localhost:5000/modelImages/${res.data.model.image}`,
                         }
                     )
