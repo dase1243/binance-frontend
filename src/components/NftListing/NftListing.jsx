@@ -10,7 +10,7 @@ export default function NftListing() {
         async function getAllNftsFromServer() {
             const userEmail = JSON.parse(localStorage.getItem('email'))
             console.log(userEmail)
-            axios.get(`https://binance-hack.herokuapp.com/api/model/getAllNftsByUserEmail/${localStorage.getItem('email')}`)
+            axios.get(`https://binance-hack.herokuapp.com/api/user/getAllNftsByUserEmail/${localStorage.getItem('email')}`)
             // axios.get('http://localhost:5000/api/user/getAllNftsByUserEmail/' + userEmail)
                 .then(res => {
                     console.log('res.data.result: ', res.data.result)
