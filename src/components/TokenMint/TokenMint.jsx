@@ -36,12 +36,14 @@ export default function TokenMint() {
                         status: true
                     })
                 } else {
+
+                    console.log('res.data.model: ', res.data.model)
                     setTokenInfo({
                             name: res.data.model.name,
                             description: res.data.model.description,
                             walletAddress: res.data.model.user.walletAddress,
                             modelId: params.modelId,
-                            imageUrl: `https://binance-hack.herokuapp.com/modelImages/${res.data.model.image}`,
+                            imageUrl: res.data.model.nft_image,
                             // imageUrl: `http://localhost:5000/modelImages/${res.data.model.image}`,
                         }
                     )
@@ -79,15 +81,19 @@ export default function TokenMint() {
             {
                 tokenInfo.imageUrl === ''
                     ?
-                    <></>
+                    <div className="btn__mint mb-3">
+                        <div className="alert alert-danger text-break mb-3" role="alert">
+                            No token image found
+                        </div>
+                    </div>
                     :
-                    <img className="card-img-top mb-3"
-                         src={tokenInfo.imageUrl}
-                         alt="Card image cap"/>
+                    <div className="btn__mint mb-3">
+                        <img className="mb-3"
+                             src={tokenInfo.imageUrl}
+                             alt="Card image cap"/>
+                    </div>
+
             }
-            {/*<img className="card-img-top mb-3"*/}
-            {/*     src="https://lh3.googleusercontent.com/JGr2C0ak0sf6Rp_E5V2bX5dqD1vkPPPHIcq_AqIE2PT4lqRrq2wraMICa-oCVRMViSzMgrbVoG6OcDWAnoKV5QE1_PPkCSAHBFl2Nd0"*/}
-            {/*     alt="Card image cap"/>*/}
             <div className="btn__mint mb-3">
                 <button
                     type="button"
