@@ -68,6 +68,7 @@ export default function Register() {
                                 walletAddress: data[0]
                             })
                             setMetamaskChosenAddress((_) => data[0])
+                            console.log(metamaskChosenAddress)
                         });
                     return web3;
                 } catch (error) {
@@ -85,8 +86,7 @@ export default function Register() {
     }
 
     async function registerUser(newUserBody) {
-        return fetch('https://binance-hack.herokuapp.com/api/user/register', {
-        // return fetch('http://localhost:5000/api/user/register', {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}api/user/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +106,7 @@ export default function Register() {
             email: formState.emailInput,
             password: formState.passwordInput,
             password_repeat: formState.passwordRepeatInput,
-            walletAddress: formState.walletAddress,
+            walletAddress: formState.walletAddress ? formState.walletAddress : metamaskChosenAddress,
         });
 
         console.log(message)

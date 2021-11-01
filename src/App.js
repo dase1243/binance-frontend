@@ -9,7 +9,6 @@ import NftListing from "./components/NftListing/NftListing";
 
 const App = () => {
     const [token, setToken] = React.useState();
-    const [email, setEmail] = React.useState();
     const tokenLocalStorage = localStorage.getItem('token');
 
     React.useEffect(() => {
@@ -32,7 +31,7 @@ const App = () => {
                     <div className="auth-inner">
                         <Switch>
                             <Route exact path='/'>
-                                <Login setToken={setToken} setEmail={setEmail}/>
+                                <Login setToken={setToken}/>
                             </Route>
                             <Route exact path='/login'>
                                 <Login setToken={setToken}/>
@@ -64,7 +63,8 @@ const App = () => {
                     <iframe
                         onLoad={() => {
                             let iframe = document.getElementById('my_iframe').contentWindow;
-                            iframe.postMessage(email, "*");
+                            iframe.postMessage(localStorage.getItem('email'), "*");
+                            console.log('Parent posted a PostMessage')
                         }}
                         id="my_iframe"
                         src="https://infinite-heroes.herokuapp.com/"

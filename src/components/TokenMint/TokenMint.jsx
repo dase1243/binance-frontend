@@ -25,11 +25,9 @@ export default function TokenMint() {
         const params = Object.fromEntries(urlSearchParams.entries());
         console.log(params)
 
-        axios.get(`https://binance-hack.herokuapp.com/api/model/getById/${params.modelId}`)
-            // axios.get(`http://localhost:5000/api/model/getById/${params.modelId}`)
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}api/model/getById/${params.modelId}`)
             .then(res => {
                 console.log('res.data: ', res.data)
-                console.log('res: ', res)
                 if (!res.data.success) {
                     setFormAlert({
                         message: res.data.message,
@@ -43,8 +41,7 @@ export default function TokenMint() {
                             description: res.data.model.description,
                             walletAddress: res.data.model.user.walletAddress,
                             modelId: params.modelId,
-                            imageUrl: res.data.model.base_image,
-                            // imageUrl: `http://localhost:5000/modelImages/${res.data.model.image}`,
+                            imageUrl: res.data.model.nft_image,
                         }
                     )
                 }
@@ -63,10 +60,10 @@ export default function TokenMint() {
             const web3 = new Web3(window.ethereum);
 
             const contract = new web3.eth.Contract(nftAbi, process.env.REACT_APP_NFT_CONTRACT_ADDR);
-            const uri = `https://binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
-            // const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
-
+            const uri = `${process.env.REACT_APP_BACKEND_URL}api/model/getSmartContractInfo/${tokenInfo.modelId}`
             await contract.methods.awardItem(tokenInfo.walletAddress, uri).send({from: tokenInfo.walletAddress});
+
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/model/updateModelPrintedStatus/${tokenInfo.modelId}`, {printed: true})
         }
     }
 

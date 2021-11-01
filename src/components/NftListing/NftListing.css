@@ -26,3 +26,7 @@
     align-items: center;
     justify-content: center;
 }
+
+.btn__play {
+    text-align: center;
+}
