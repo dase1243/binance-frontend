@@ -106,12 +106,12 @@ export default function Register() {
             email: formState.emailInput,
             password: formState.passwordInput,
             password_repeat: formState.passwordRepeatInput,
-            walletAddress: formState.walletAddress ? formState.walletAddress : metamaskChosenAddress,
+            walletAddress: metamaskChosenAddress,
         });
 
         console.log(message)
         if (success) {
-            history.push("/login");
+            history.push("/");
             alert("success. Please login with your credentials")
         } else {
             setFormAlert({

@@ -1,7 +1,7 @@
 import React from 'react';
 import './TokenMint.css';
 import axios from 'axios';
-
+import Loader from "react-loader-spinner";
 import Web3 from 'web3';
 import nftAbi from '../../static/InfiniteHeroAbi.json'
 import {Link} from "react-router-dom";
@@ -18,6 +18,8 @@ export default function TokenMint() {
 
     const [metamaskConnection, setMetamaskConnection] = React.useState(false);
     const [metamaskChosenAddress, setMetamaskChosenAddress] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+    const [metamaskPrint, setMetamaskPrint] = React.useState(false);
 
     const [formAlert, setFormAlert] = React.useState({
         message: '',
@@ -66,13 +68,15 @@ export default function TokenMint() {
                             walletAddress: res.data.model.user.walletAddress,
                             modelId: params.modelId,
                             imageUrl: res.data.model.base_image,
+                            nftImageUrl: res.data.model.nft_image,
                             printed: res.data.model.printed,
                         }
                     )
                 }
             })
             .catch((err) => {
-                console.log(err.response.data)
+                console.log(err)
+                console.log(err.data)
                 setFormAlert({
                     message: err.response.data.message,
                     status: true
@@ -85,16 +89,48 @@ export default function TokenMint() {
             const web3 = new Web3(window.ethereum);
 
             const contract = new web3.eth.Contract(nftAbi, process.env.REACT_APP_NFT_CONTRACT_ADDR);
-            const uri = `binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
+            const uri = `binance-hack.herokuapp.com/api/nft_token/getSmartContractInfo/${tokenInfo.modelId}`
             // const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
-            await contract.methods.awardItem(tokenInfo.walletAddress, uri).send({from: tokenInfo.walletAddress});
-
+            console.log('metamaskChosenAddress: ', metamaskChosenAddress)
+            setLoading((_) => true)
+            const result = await contract.methods.awardItem(metamaskChosenAddress, uri).send({from: metamaskChosenAddress});
+            setLoading((_) => false)
+            setMetamaskPrint((_) => true)
+            console.log('tokenIdEncoded result: ', result)
+            const tokenIdEncoded = result['events']['0']['raw']['topics'][3];
+            // const tokenId = parseInt(tokenIdEncoded, 16);
             await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/model/updateModelPrintedStatus/${tokenInfo.modelId}`, {printed: true})
+                .then(res => {
+                    console.log("updateModelPrintedStatus: done")
+                })
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/nft_token/create`,
+                {
+                    name: tokenInfo.name,
+                    model_id: tokenInfo.modelId,
+                    description: tokenInfo.description,
+                    image_uri: tokenInfo.imageUrl,
+                    token_id: tokenIdEncoded
+                }
+            ).then(res => {
+                console.log("nft_token creation: done")
+                console.log("nft_token data: ", res.data)
+            })
         }
     }
 
-    return (
-        <div>
+    if (loading) {
+        return (
+            <div className="text-center">
+                <Loader
+                    type="Puff"
+                    color="#00BFFF"
+                    height={100}
+                    width={100}
+                />
+            </div>
+        );
+    } else {
+        return (<div>
             <h5 className="card-title">Token Information</h5>
             <ul className="list-group list-group-flush mb-3">
                 <li className="list-group-item">Wallet address: {tokenInfo.walletAddress}</li>
@@ -158,14 +194,22 @@ export default function TokenMint() {
                         </button>
                     </div>
             }
+            {
+                metamaskPrint ?
+                    <div className="alert alert-success text-break text-center" role="alert">
+                        Your token successfully printed.
+                    </div>
+                    :
+                    <></>
+            }
             <div className="token_mint__navigation">
                 <Link to={"./"}>
                     Home
                 </Link>
-                <Link to={"./nftList"}>
-                    See all my NFTs
-                </Link>
+                {/*<Link to={"./nftList"}>*/}
+                {/*    See all my NFTs*/}
+                {/*</Link>*/}
             </div>
-        </div>
-    );
+        </div>)
+    }
 }

@@ -2,9 +2,9 @@ import React from 'react';
 import './TokenBalance.css';
 import {Link} from "react-router-dom";
 import axios from "axios";
-import web3 from "web3";
 import Web3 from "web3";
 import BigNumber from "bignumber.js";
+import Loader from "react-loader-spinner";
 
 const tknAbi = require('../../static/GLRY.json');
 
@@ -13,6 +13,45 @@ export default function TokenBalance() {
     const [userWalletBalance, setUserWalletBalance] = React.useState(0)
     const [depositInput, setDepositInput] = React.useState('')
     const [withdrawInput, setWithdrawInput] = React.useState('')
+    const [loading, setLoading] = React.useState(false);
+    const [metamaskConnection, setMetamaskConnection] = React.useState(false);
+    const [metamaskChosenAddress, setMetamaskChosenAddress] = React.useState('');
+
+    const [formAlert, setFormAlert] = React.useState({
+        message: '',
+        status: false
+    });
+
+    const clickMetaMaskButton = async (e) => {
+        e.preventDefault()
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+
+            try {
+                // Request account access if needed
+                await window.ethereum.enable();
+                console.log('window.ethereum.isConnected: ', window.ethereum.isConnected());
+                // Accounts now exposed
+                await web3.eth.getAccounts()
+                    .then(data => {
+                        setMetamaskChosenAddress((_) => data[0]);
+                        console.log(data[0])
+                        console.log("user.walletAddress: ", user.walletAddress)
+                        if (data[0] !== user.walletAddress) {
+                            setFormAlert({
+                                message: 'Your Account Wallet and Metamask Wallet are different. Please Connect the initial wallet, which was used while registration',
+                                status: true
+                            })
+                        }
+                    });
+
+                setMetamaskConnection((_) => true);
+                return web3;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
 
     React.useEffect(() => {
         const email = localStorage.getItem("email")
@@ -31,7 +70,9 @@ export default function TokenBalance() {
                 const contract = new web3.eth.Contract(tknAbi, process.env.REACT_APP_TKN_CONTRACT_ADDR);
                 console.log("user.walletAddress: ", user.walletAddress)
                 const result = await contract.methods.balanceOf(user.walletAddress).call();
-                setUserWalletBalance((_) => result)
+                setUserWalletBalance((_) => new BigNumber(result).dividedBy(new BigNumber(1)
+                    .shiftedBy(18)
+                ).toNumber())
             }
         }
     }, [user])
@@ -54,7 +95,29 @@ export default function TokenBalance() {
                 const web3 = new Web3(window.ethereum);
                 const amountShifted = new BigNumber(withdrawNumber).shiftedBy(18);
                 const contract = new web3.eth.Contract(tknAbi, process.env.REACT_APP_TKN_CONTRACT_ADDR);
-                await contract.methods.withdraw(user.walletAddress, amountShifted).send({from: user.walletAddress});
+                setLoading((_) => true)
+                const result = await contract.methods.withdraw(user.walletAddress, amountShifted).send({from: user.walletAddress});
+                setLoading((_) => false)
+                if (result.status) {
+                    await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/user/updateUserTokenAmount/${user._id}`, {tokenAmount: (user.tokenAmount - withdrawNumber)})
+                        .then(res => {
+                            console.log('Withdraw token amount from user balance promise then: ', res.data)
+                        })
+                    window.location.reload()
+                } else {
+                    setFormAlert({
+                        message: 'Transaction failed',
+                        status: true,
+                    })
+                }
+                console.log(result);
+            } else {
+                if (withdrawNumber > user.tokenAmount) {
+                    setFormAlert({
+                        message: 'Withdraw should be less or equal than your In-Game balance',
+                        status: true,
+                    })
+                }
             }
         } catch (e) {
             console.log("e: ", e)
@@ -63,67 +126,129 @@ export default function TokenBalance() {
     }
 
     const deposit = async () => {
-        let depositNumber = parseInt(depositInput, 10);
-        if (window.ethereum && user.walletAddress && depositNumber <= userWalletBalance) {
-            console.log(' user.walletAddress: ', user.walletAddress)
-            const web3 = new Web3(window.ethereum);
-            const amountShifted = new BigNumber(parseInt(depositInput, 10)).shiftedBy(18);
-            const contract = new web3.eth.Contract(tknAbi, process.env.REACT_APP_TKN_CONTRACT_ADDR);
-            await contract.methods.deposit(amountShifted).send({from: user.walletAddress});
+        try {
+            let depositNumber = parseInt(depositInput, 10);
+            new BigNumber(userWalletBalance)
+            if (window.ethereum && user.walletAddress && depositNumber <= userWalletBalance) {
+                console.log(' user.walletAddress: ', user.walletAddress)
+                const web3 = new Web3(window.ethereum);
+                const amountShifted = new BigNumber(depositNumber).shiftedBy(18);
+                const contract = new web3.eth.Contract(tknAbi, process.env.REACT_APP_TKN_CONTRACT_ADDR);
+                setLoading((_) => true)
+                const result = await contract.methods.deposit(amountShifted).send({from: user.walletAddress});
+                setLoading((_) => false)
+                if (result.status) {
+                    await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/user/updateUserTokenAmount/${user._id}`, {tokenAmount: (depositNumber + user.tokenAmount)})
+                        .then(res => {
+                            console.log('Deposit token amount from user balance promise then: ', res.data)
+                        })
+                    window.location.reload()
+                } else {
+                    setFormAlert({
+                        message: 'Transaction failed',
+                        status: true,
+                    })
+                }
+            } else {
+                if (depositNumber > userWalletBalance) {
+                    setFormAlert({
+                        message: 'Deposit should be less or equal than your On-Chain balance',
+                        status: true,
+                    })
+                }
+            }
+        } catch (e) {
+            console.log("e: ", e)
+            console.log("e.data: ", e.data)
         }
     }
 
 
-    return (
-        <div>
-            <h5 className="card-title">Total Token Balance</h5>
-            <ul className="list-group list-group-flush mb-3">
-                <li className="list-group-item"></li>
-                <li className="list-group-item">On-Chain Balance: {userWalletBalance} GLRY</li>
-                <li className="list-group-item">In-Game Balance: {user.tokenAmount} GLRY</li>
-                <li className="list-group-item"></li>
-            </ul>
-            <div className="token_balance__inputs m-4">
-                <div>
+    if (loading) {
+        return (
+            <div className="text-center">
+                <Loader
+                    type="Puff"
+                    color="#00BFFF"
+                    height={100}
+                    width={100}
+                />
+            </div>
+        );
+    } else {
+        return (
+            <div>
+                <h5 className="card-title">Total Token Balance</h5>
+                <ul className="list-group list-group-flush mb-3">
+                    <li className="list-group-item"></li>
+                    <li className="list-group-item">On-Chain Balance: {userWalletBalance} GLRY</li>
+                    <li className="list-group-item">In-Game Balance: {user.tokenAmount} GLRY</li>
+                    <li className="list-group-item"></li>
+                </ul>
+                <div className="token_balance__inputs m-4">
                     <div>
-                        <h6 className="mb-0">Deposit</h6>
-                        <label className="token_balance__input_label">Put tokens into the game</label>
+                        <div>
+                            <h6 className="mb-0">Deposit</h6>
+                            <label className="token_balance__input_label">Put tokens into the game</label>
+                        </div>
+                        <input
+                            id="userDeposit"
+                            name="depositInput"
+                            type="text"
+                            pattern="[0-9]*"
+                            onChange={onDepositChangeInput}
+                            required
+                        />
+                        <button id="btnDeposit" onClick={deposit} disabled={formAlert.status}>Deposit</button>
                     </div>
-                    <input
-                        id="userDeposit"
-                        name="depositInput"
-                        type="text"
-                        pattern="[0-9]*"
-                        onChange={onDepositChangeInput}
-                        required
-                    />
-                    <button id="btnDeposit" onClick={deposit}>Deposit</button>
+                    <div>
+                        <div>
+                            <h6 className="mb-0">Withdraw</h6>
+                            <label className="token_balance__input_label">Get tokens from the game</label>
+                        </div>
+                        <input
+                            id="userWithdraw"
+                            name="withdrawInput"
+                            type="text"
+                            pattern="[0-9]*"
+                            onChange={onWithdrawChangeInput}
+                            required
+                        />
+                        <button id="btnWithdraw" onClick={withdraw} disabled={formAlert.status}>Withdraw</button>
+                    </div>
                 </div>
-                <div>
-                    <div>
-                        <h6 className="mb-0">Withdraw</h6>
-                        <label className="token_balance__input_label">Get tokens from the game</label>
-                    </div>
-                    <input
-                        id="userWithdraw"
-                        name="withdrawInput"
-                        type="text"
-                        pattern="[0-9]*"
-                        onChange={onWithdrawChangeInput}
-                        required
-                    />
-                    <button id="btnWithdraw" onClick={withdraw}>Withdraw</button>
+                {
+                    metamaskConnection ?
+                        <div className="alert alert-success text-break text-center" role="alert">
+                            Metamask is connected. Address: {metamaskChosenAddress}
+                        </div>
+                        :
+                        <div className="alert alert-danger text-break text-center" role="alert">
+                            Please connect you Metamask Account
+                            <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
+                                Connect Metamask
+                            </button>
+                        </div>
+                }
+                {
+                    formAlert.status
+                        ?
+                        <div className="alert alert-danger text-break text-center" role="alert">
+                            {formAlert.message}
+                        </div>
+                        :
+                        <></>
+                }
+                <div className="token_mint__navigation">
+                    <Link to={"./"}>
+                        Home
+                    </Link>
+                    {/*<Link to={"./nftList"}>*/}
+                    {/*    See all my NFTs*/}
+                    {/*</Link>*/}
                 </div>
             </div>
-            <div className="token_mint__navigation">
-                <Link to={"./"}>
-                    Home
-                </Link>
-                <Link to={"./nftList"}>
-                    See all my NFTs
-                </Link>
-            </div>
-        </div>
-    );
+        );
+    }
 }
 
