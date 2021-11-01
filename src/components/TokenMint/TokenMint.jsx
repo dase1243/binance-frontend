@@ -12,7 +12,8 @@ export default function TokenMint() {
         description: '',
         name: '',
         walletAddress: '',
-        imageUrl: ''
+        imageUrl: '',
+        printed: false,
     })
 
     const [metamaskConnection, setMetamaskConnection] = React.useState(false);
@@ -65,6 +66,7 @@ export default function TokenMint() {
                             walletAddress: res.data.model.user.walletAddress,
                             modelId: params.modelId,
                             imageUrl: res.data.model.base_image,
+                            printed: res.data.model.printed,
                         }
                     )
                 }
@@ -118,7 +120,7 @@ export default function TokenMint() {
             <div className="btn__mint mb-3">
                 <button
                     type="button"
-                    disabled={formAlert.status || !metamaskConnection}
+                    disabled={formAlert.status || !metamaskConnection || tokenInfo.printed}
                     className="btn btn-primary"
                     onClick={mintToken}
                 >
@@ -130,6 +132,15 @@ export default function TokenMint() {
                     ?
                     <div className="alert alert-danger text-break" role="alert">
                         {formAlert.message}
+                    </div>
+                    :
+                    <></>
+            }
+            {
+                tokenInfo.printed
+                    ?
+                    <div className="alert alert-danger text-break text-center" role="alert">
+                        Token already printed. You can't print it for the second time
                     </div>
                     :
                     <></>
