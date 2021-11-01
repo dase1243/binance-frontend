@@ -175,7 +175,7 @@ export default function TokenBalance() {
         );
     } else {
         return (
-            <div>
+            <div className="token_balance__container">
                 <h5 className="card-title">Total Token Balance</h5>
                 <ul className="list-group list-group-flush mb-3">
                     <li className="list-group-item"></li>
@@ -193,11 +193,19 @@ export default function TokenBalance() {
                             id="userDeposit"
                             name="depositInput"
                             type="text"
+                            className="token_balance__input"
                             pattern="[0-9]*"
                             onChange={onDepositChangeInput}
                             required
                         />
-                        <button id="btnDeposit" onClick={deposit} disabled={formAlert.status}>Deposit</button>
+                        <button
+                            id="btnDeposit"
+                            onClick={deposit}
+                            className="token_balance__button"
+                            disabled={formAlert.status}
+                        >
+                            Deposit
+                        </button>
                     </div>
                     <div>
                         <div>
@@ -207,12 +215,20 @@ export default function TokenBalance() {
                         <input
                             id="userWithdraw"
                             name="withdrawInput"
+                            className="token_balance__input"
                             type="text"
                             pattern="[0-9]*"
                             onChange={onWithdrawChangeInput}
                             required
                         />
-                        <button id="btnWithdraw" onClick={withdraw} disabled={formAlert.status}>Withdraw</button>
+                        <button
+                            id="btnWithdraw"
+                            className="token_balance__button"
+                            onClick={withdraw}
+                            disabled={formAlert.status}
+                        >
+                            Withdraw
+                        </button>
                     </div>
                 </div>
                 <MetamaskConnection

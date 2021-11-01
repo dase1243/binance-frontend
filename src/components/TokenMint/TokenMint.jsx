@@ -85,7 +85,7 @@ export default function TokenMint() {
                 console.log(err)
                 console.log(err.data)
                 setFormAlert({
-                    message: err.response.data.message,
+                    message: err.data.message,
                     status: true
                 })
             })
