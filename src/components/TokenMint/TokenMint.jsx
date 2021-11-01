@@ -59,8 +59,8 @@ export default function TokenMint() {
             const web3 = new Web3(window.ethereum);
 
             const contract = new web3.eth.Contract(nftAbi, process.env.REACT_APP_NFT_CONTRACT_ADDR);
-            // const uri = `binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
-            const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
+            const uri = `binance-hack.herokuapp.com/api/model/getSmartContractInfo/${tokenInfo.modelId}`
+            // const uri = `localhost:5000/api/model/getSmartContractInfo/${tokenInfo.modelId}`
             await contract.methods.awardItem(tokenInfo.walletAddress, uri).send({from: tokenInfo.walletAddress});
 
             await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/model/updateModelPrintedStatus/${tokenInfo.modelId}`, {printed: true})
