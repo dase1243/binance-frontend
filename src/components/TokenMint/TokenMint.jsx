@@ -15,10 +15,34 @@ export default function TokenMint() {
         imageUrl: ''
     })
 
+    const [metamaskConnection, setMetamaskConnection] = React.useState(false);
+    const [metamaskChosenAddress, setMetamaskChosenAddress] = React.useState('');
+
     const [formAlert, setFormAlert] = React.useState({
         message: '',
         status: false
     });
+
+    const clickMetaMaskButton = async (e) => {
+        e.preventDefault()
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+
+            try {
+                // Request account access if needed
+                await window.ethereum.enable();
+                console.log('window.ethereum.isConnected: ', window.ethereum.isConnected());
+                // Accounts now exposed
+                await web3.eth.getAccounts()
+                    .then(data => setMetamaskChosenAddress((_) => data[0]));
+
+                setMetamaskConnection((_) => true);
+                return web3;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
 
     React.useEffect(() => {
         const urlSearchParams = new URLSearchParams(window.location.search);
@@ -94,7 +118,7 @@ export default function TokenMint() {
             <div className="btn__mint mb-3">
                 <button
                     type="button"
-                    disabled={formAlert.status}
+                    disabled={formAlert.status || !metamaskConnection}
                     className="btn btn-primary"
                     onClick={mintToken}
                 >
@@ -109,6 +133,19 @@ export default function TokenMint() {
                     </div>
                     :
                     <></>
+            }
+            {
+                metamaskConnection ?
+                    <div className="alert alert-success text-break text-center" role="alert">
+                        Metamask is connected. Address: {metamaskChosenAddress}
+                    </div>
+                    :
+                    <div className="alert alert-danger text-break text-center" role="alert">
+                        Please connect you Metamask Account
+                        <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
+                            Connect Metamask
+                        </button>
+                    </div>
             }
             <div className="token_mint__navigation">
                 <Link to={"./"}>
