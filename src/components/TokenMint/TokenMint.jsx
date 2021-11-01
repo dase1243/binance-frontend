@@ -197,9 +197,9 @@ export default function TokenMint() {
                 <Link to={"./"}>
                     Home
                 </Link>
-                {/*<Link to={"./nftList"}>*/}
-                {/*    See all my NFTs*/}
-                {/*</Link>*/}
+                <Link to={"./nftList"}>
+                    See all my NFTs
+                </Link>
             </div>
         </div>)
     }

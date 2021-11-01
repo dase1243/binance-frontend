@@ -13,9 +13,9 @@ export default function NftListing() {
     React.useEffect(async () => {
         async function getAllNftsFromServer() {
             let emailString = localStorage.getItem('email');
-            await axios.get(`${process.env.REACT_APP_BACKEND_URL}api/user/getAllNftsByUserEmail/${emailString}`)
+            await axios.get(`${process.env.REACT_APP_BACKEND_URL}api/nft_token/getAllNftsByUserEmail/${emailString}`)
                 .then(res => {
-                    setNfts((_) => res.data.result)
+                    setNfts((_) => res.data)
                 })
                 .catch((err) => {
                     console.log(err.data)
@@ -40,53 +40,40 @@ export default function NftListing() {
                     </div>
                     :
                     nfts.map((nft) => {
-                        axios.get(`${nft.token_uri}`)
-                            .then(nested_res => {
-                                // console.log('res.data.result: ', nested_res.data)
+                            return (
+                                <div key={nft.token_id}
+                                     className="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div className="d-flex w-100 justify-content-between mt-5">
+                                        <h5 className="mb-1">{nft.name}</h5>
+                                        <small>{nft.contract_type}</small>
+                                    </div>
+                                    <ul className="list-group list-group-flush mb-3">
+                                        <li className="list-group-item">Owner address: {nft.owner_of}</li>
+                                        <li className="list-group-item">Symbol: {nft.symbol}</li>
+                                        <li className="list-group-item">Token Address: {nft.token_address}</li>
+                                        <li className="list-group-item">Token ID: {nft.token_id}</li>
 
-                                nft.token_description = nested_res.data.description
-                                nft.token_image = nested_res.data.image
-                                nft.token_name = nested_res.data.name
-                            })
-                            .catch((err) => {
-                                // error
-                                // console.log(err.data)
-                            })
-
-
-                        return (
-                            <div key={nft.token_id}
-                                 className="list-group-item list-group-item-action flex-column align-items-start">
-                                <div className="d-flex w-100 justify-content-between mt-5">
-                                    <h5 className="mb-1">{nft.name}</h5>
-                                    <small>{nft.contract_type}</small>
+                                        {nft.token_description ? <li className="list-group-item">Token
+                                            Description: {nft.token_description}</li> : <></>}
+                                        {nft.token_name ?
+                                            <li className="list-group-item">Token Name: {nft.token_name}</li> : <></>}
+                                    </ul>
+                                    {
+                                        nft.token_image
+                                            ?
+                                            <div className="nft_listing__image">
+                                                <img
+                                                    src={nft.token_image}
+                                                    alt="Card image cap"
+                                                />
+                                            </div>
+                                            :
+                                            <></>
+                                    }
                                 </div>
-                                <ul className="list-group list-group-flush mb-3">
-                                    <li className="list-group-item">Owner address: {nft.owner_of}</li>
-                                    <li className="list-group-item">Symbol: {nft.symbol}</li>
-                                    <li className="list-group-item">Token Address: {nft.token_address}</li>
-                                    <li className="list-group-item">Token ID: {nft.token_id}</li>
-
-                                    {nft.token_description ? <li className="list-group-item">Token
-                                        Description: {nft.token_description}</li> : <></>}
-                                    {nft.token_name ?
-                                        <li className="list-group-item">Token Name: {nft.token_name}</li> : <></>}
-                                </ul>
-                                {
-                                    nft.token_image
-                                        ?
-                                        <div className="nft_listing__image">
-                                            <img
-                                                src={nft.token_image}
-                                                alt="Card image cap"
-                                            />
-                                        </div>
-                                        :
-                                        <></>
-                                }
-                            </div>
-                        )
-                    })
+                            )
+                        }
+                    )
                 }
             </div>
         </div>
