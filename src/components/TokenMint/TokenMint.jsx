@@ -5,6 +5,8 @@ import Loader from "react-loader-spinner";
 import Web3 from 'web3';
 import nftAbi from '../../static/InfiniteHeroAbi.json'
 import {Link} from "react-router-dom";
+import MetamaskConnection from "../MetamaskConnection/MetamaskConnection";
+import FormAlert from "../FormAlert/FormAlert";
 
 export default function TokenMint() {
     const [tokenInfo, setTokenInfo] = React.useState({
@@ -34,10 +36,17 @@ export default function TokenMint() {
             try {
                 // Request account access if needed
                 await window.ethereum.enable();
-                console.log('window.ethereum.isConnected: ', window.ethereum.isConnected());
                 // Accounts now exposed
                 await web3.eth.getAccounts()
-                    .then(data => setMetamaskChosenAddress((_) => data[0]));
+                    .then(data => {
+                        setMetamaskChosenAddress((_) => data[0]);
+                        if (data[0] !== tokenInfo.walletAddress) {
+                            setFormAlert({
+                                message: 'Your Account Wallet and Metamask Wallet are different. Please Connect the initial wallet, which was used while registration',
+                                status: true
+                            })
+                        }
+                    });
 
                 setMetamaskConnection((_) => true);
                 return web3;
@@ -54,14 +63,12 @@ export default function TokenMint() {
 
         axios.get(`${process.env.REACT_APP_BACKEND_URL}api/model/getById/${params.modelId}`)
             .then(res => {
-                console.log('res.data: ', res.data)
                 if (!res.data.success) {
                     setFormAlert({
                         message: res.data.message,
                         status: true
                     })
                 } else {
-                    console.log('res.data.model: ', res.data.model)
                     setTokenInfo({
                             name: res.data.model.name,
                             description: res.data.model.description,
@@ -163,15 +170,12 @@ export default function TokenMint() {
                     Mint NFT
                 </button>
             </div>
-            {
-                formAlert.status
-                    ?
-                    <div className="alert alert-danger text-break" role="alert">
-                        {formAlert.message}
-                    </div>
-                    :
-                    <></>
-            }
+            <FormAlert formAlert={formAlert}/>
+            <MetamaskConnection
+                metamaskConnection={metamaskConnection}
+                metamaskChosenAddress={metamaskChosenAddress}
+                clickMetaMaskButton={clickMetaMaskButton}
+            />
             {
                 tokenInfo.printed
                     ?
@@ -180,19 +184,6 @@ export default function TokenMint() {
                     </div>
                     :
                     <></>
-            }
-            {
-                metamaskConnection ?
-                    <div className="alert alert-success text-break text-center" role="alert">
-                        Metamask is connected. Address: {metamaskChosenAddress}
-                    </div>
-                    :
-                    <div className="alert alert-danger text-break text-center" role="alert">
-                        Please connect you Metamask Account
-                        <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
-                            Connect Metamask
-                        </button>
-                    </div>
             }
             {
                 metamaskPrint ?

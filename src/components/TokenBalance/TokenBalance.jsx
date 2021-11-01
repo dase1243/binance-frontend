@@ -5,6 +5,8 @@ import axios from "axios";
 import Web3 from "web3";
 import BigNumber from "bignumber.js";
 import Loader from "react-loader-spinner";
+import MetamaskConnection from "../MetamaskConnection/MetamaskConnection";
+import FormAlert from "../FormAlert/FormAlert";
 
 const tknAbi = require('../../static/GLRY.json');
 
@@ -30,13 +32,10 @@ export default function TokenBalance() {
             try {
                 // Request account access if needed
                 await window.ethereum.enable();
-                console.log('window.ethereum.isConnected: ', window.ethereum.isConnected());
                 // Accounts now exposed
                 await web3.eth.getAccounts()
                     .then(data => {
                         setMetamaskChosenAddress((_) => data[0]);
-                        console.log(data[0])
-                        console.log("user.walletAddress: ", user.walletAddress)
                         if (data[0] !== user.walletAddress) {
                             setFormAlert({
                                 message: 'Your Account Wallet and Metamask Wallet are different. Please Connect the initial wallet, which was used while registration',
@@ -79,12 +78,12 @@ export default function TokenBalance() {
 
     const onWithdrawChangeInput = (e) => {
         e.preventDefault()
-        setWithdrawInput((_) => e.target.validity.valid ? e.target.value : '')
+        setWithdrawInput((_) => e.target.value)
     }
 
     const onDepositChangeInput = (e) => {
         e.preventDefault()
-        setDepositInput((_) => e.target.validity.valid ? e.target.value : '')
+        setDepositInput((_) => e.target.value)
     }
 
     const withdraw = async () => {
@@ -149,13 +148,12 @@ export default function TokenBalance() {
                         status: true,
                     })
                 }
-            } else {
-                if (depositNumber > userWalletBalance) {
-                    setFormAlert({
-                        message: 'Deposit should be less or equal than your On-Chain balance',
-                        status: true,
-                    })
-                }
+            } else if (depositNumber > userWalletBalance) {
+                setFormAlert({
+                    message: 'Deposit should be less or equal than your On-Chain balance',
+                    status: true,
+                })
+
             }
         } catch (e) {
             console.log("e: ", e)
@@ -217,28 +215,12 @@ export default function TokenBalance() {
                         <button id="btnWithdraw" onClick={withdraw} disabled={formAlert.status}>Withdraw</button>
                     </div>
                 </div>
-                {
-                    metamaskConnection ?
-                        <div className="alert alert-success text-break text-center" role="alert">
-                            Metamask is connected. Address: {metamaskChosenAddress}
-                        </div>
-                        :
-                        <div className="alert alert-danger text-break text-center" role="alert">
-                            Please connect you Metamask Account
-                            <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
-                                Connect Metamask
-                            </button>
-                        </div>
-                }
-                {
-                    formAlert.status
-                        ?
-                        <div className="alert alert-danger text-break text-center" role="alert">
-                            {formAlert.message}
-                        </div>
-                        :
-                        <></>
-                }
+                <MetamaskConnection
+                    metamaskConnection={metamaskConnection}
+                    metamaskChosenAddress={metamaskChosenAddress}
+                    clickMetaMaskButton={clickMetaMaskButton}
+                />
+                <FormAlert formAlert={formAlert}/>
                 <div className="token_mint__navigation">
                     <Link to={"./"}>
                         Home

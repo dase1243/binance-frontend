@@ -2,6 +2,26 @@ import React, {useEffect} from 'react';
 import './Register.css';
 import {Link, useHistory} from 'react-router-dom'
 import Web3 from 'web3'
+import FormAlert from "../FormAlert/FormAlert";
+import MetamaskConnection from "../MetamaskConnection/MetamaskConnection";
+
+function FormInput({onChangeInput, label, placeholder, name, type}) {
+    return (
+        <div className="mb-3">
+            <div className="form-group">
+                <label>{label}</label>
+                <input
+                    onChange={onChangeInput}
+                    type={type}
+                    name={name}
+                    className="form-control"
+                    placeholder={placeholder}
+                    required
+                />
+            </div>
+        </div>
+    )
+}
 
 export default function Register() {
     let history = useHistory();
@@ -35,7 +55,9 @@ export default function Register() {
                 // Accounts now exposed
                 setMetamaskConnection((_) => true);
                 await web3.eth.getAccounts()
-                    .then(data => setMetamaskChosenAddress((_) => data[0]));
+                    .then(data => {
+                        setMetamaskChosenAddress((_) => data[0])
+                    });
                 return web3;
             } catch (error) {
                 console.error(error);
@@ -125,90 +147,48 @@ export default function Register() {
         <div>
             <form className="mb-3" onSubmit={handleSubmit}>
                 <h3>Register</h3>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>First Name</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="text"
-                            name="firstnameInput"
-                            className="form-control"
-                            placeholder="Enter firstname"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>Last Name</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="text"
-                            name="lastnameInput"
-                            className="form-control"
-                            placeholder="Enter lastname"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>Username</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="text"
-                            name="usernameInput"
-                            className="form-control"
-                            placeholder="Enter username"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>Email address</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="email"
-                            name="emailInput"
-                            className="form-control"
-                            placeholder="Enter email"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="password"
-                            name="passwordInput"
-                            className="form-control"
-                            placeholder="Enter password"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-3">
-                    <div className="form-group">
-                        <label>Repeat your password</label>
-                        <input
-                            onChange={onChangeInput}
-                            type="password"
-                            name="passwordRepeatInput"
-                            className="form-control"
-                            placeholder="Re-enter password"
-                            required
-                        />
-                    </div>
-                </div>
+                <FormInput
+                    label="First Name"
+                    onChangeInput={onChangeInput}
+                    placeholder={"Enter firstname"}
+                    name={"firstnameInput"}
+                    type={"text"}
+                />
+                <FormInput
+                    label="Last Name"
+                    onChangeInput={onChangeInput}
+                    placeholder={"Last Name"}
+                    name={"lastnameInput"}
+                    type={"text"}
+                />
+                <FormInput
+                    label="Username"
+                    onChangeInput={onChangeInput}
+                    type={"text"}
+                    name={"usernameInput"}
+                    placeholder={"Enter username"}
+                />
+                <FormInput
+                    label="Email address"
+                    onChangeInput={onChangeInput}
+                    type={"email"}
+                    name={"emailInput"}
+                    placeholder={"Enter email"}
+                />
+                <FormInput
+                    label="Password"
+                    onChangeInput={onChangeInput}
+                    type={"password"}
+                    name={"passwordInput"}
+                    placeholder={"Enter password"}
+                />
+                <FormInput
+                    label="Repeat your password"
+                    onChangeInput={onChangeInput}
+                    type={"password"}
+                    name={"passwordRepeatInput"}
+                    placeholder={"Re-enter password"}
+                />
 
                 <button
                     type="submit"
@@ -218,21 +198,12 @@ export default function Register() {
                     Submit
                 </button>
 
-                {metamaskConnection ?
-                    <div className="alert alert-success text-break" role="alert">
-                        Metamask is connected. Address: {metamaskChosenAddress}
-                    </div> :
-                    <div className="alert alert-danger text-break" role="alert">
-                        Please connect you Metamask Account
-                        <button onClick={clickMetaMaskButton} className="btn btn-primary m-lg-3">
-                            Connect Metamask
-                        </button>
-                    </div>}
-                {formAlert.status ?
-                    <div className="alert alert-danger text-break" role="alert">
-                        {formAlert.message}
-                    </div>
-                    : <></>}
+                <MetamaskConnection
+                    metamaskConnection={metamaskConnection}
+                    metamaskChosenAddress={metamaskChosenAddress}
+                    clickMetaMaskButton={clickMetaMaskButton}
+                />
+                <FormAlert formAlert={formAlert}/>
             </form>
             <Link to={"/login"}>
                 Login
