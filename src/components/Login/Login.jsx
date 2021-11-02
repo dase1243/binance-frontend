@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './Login.css';
 import {Link} from 'react-router-dom'
 
-export default function Login({setToken, setEmail}) {
+export default function Login({setToken}) {
 
     const [formState, setFormState] = React.useState({
         emailInput: '',
@@ -24,8 +24,7 @@ export default function Login({setToken, setEmail}) {
     }
 
     async function loginUser(credentials) {
-        return fetch('https://binance-hack.herokuapp.com/api/user/login', {
-        // return fetch('http://localhost:5000/api/user/login', {
+        return fetch(`${process.env.REACT_APP_BACKEND_URL}api/user/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -37,20 +36,19 @@ export default function Login({setToken, setEmail}) {
 
     const handleSubmit = async e => {
         e.preventDefault();
+
         const response = await loginUser({
             email: formState.emailInput,
             password: formState.passwordInput
         });
-
-        console.log(response)
+        localStorage.setItem('email', formState.emailInput);
 
         const {isAuth, message} = response
+
         if (isAuth) {
             setToken(response);
-            localStorage.setItem('token', JSON.stringify(response));
-
-            setEmail(formState.emailInput)
-            localStorage.setItem('email', JSON.stringify(formState.emailInput));
+            let responseString = JSON.stringify(response);
+            localStorage.setItem('token', responseString);
         } else {
             setFormAlert({
                 message,

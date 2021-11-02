@@ -6,10 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from "./components/Register/Register";
 import TokenMint from "./components/TokenMint/TokenMint";
 import NftListing from "./components/NftListing/NftListing";
+import TokenBalance from "./components/TokenBalance/TokenBalance";
 
 const App = () => {
     const [token, setToken] = React.useState();
-    const [email, setEmail] = React.useState(localStorage.getItem('email'));
     const tokenLocalStorage = localStorage.getItem('token');
 
     React.useEffect(() => {
@@ -32,7 +32,7 @@ const App = () => {
                     <div className="auth-inner">
                         <Switch>
                             <Route exact path='/'>
-                                <Login setToken={setToken} setEmail={setEmail}/>
+                                <Login setToken={setToken}/>
                             </Route>
                             <Route exact path='/login'>
                                 <Login setToken={setToken}/>
@@ -64,7 +64,8 @@ const App = () => {
                     <iframe
                         onLoad={() => {
                             let iframe = document.getElementById('my_iframe').contentWindow;
-                            iframe.postMessage(email, "*");
+                            iframe.postMessage(localStorage.getItem('email'), "*");
+                            console.log('Parent posted a PostMessage')
                         }}
                         id="my_iframe"
                         src="https://infinite-heroes.herokuapp.com/"
@@ -88,6 +89,15 @@ const App = () => {
                     <div className="auth-wrapper">
                         <NftListing/>
                     </div>
+                </div>
+            </Route>
+            <Route exact path='/tokenBalance'>
+                <div className="App">
+                    <div className="auth-wrapper">
+                        <div className="auth-inner">
+                        <TokenBalance/>
+                    </div>
+                </div>
                 </div>
             </Route>
         </Switch>

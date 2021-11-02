@@ -2,6 +2,17 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## To test NFT Mint it's necessary to connect to test blockchain nest
+Network parameters when creating new RPC network with Metamask
+
+- Network Name: Smart Chain – Testnet 
+- New RPC URL: https://data-seed-prebsc-1-s1.binance.org:8545/
+- Chain ID: 97 
+- Symbol: BNB 
+- Block Explorer URL: https://testnet.bscscan.com
+
+In the project directory, you can run:
+
 ## Available Scripts
 
 In the project directory, you can run:

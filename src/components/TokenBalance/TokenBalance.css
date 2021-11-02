@@ -1,0 +1,35 @@
+.token_balance__input,
+.token_balance__button {
+    font-size: .85em;
+    padding: .65em 1em;
+    border-radius: .3em;
+    outline: 0;
+}
+
+.token_balance__input {
+    border: 2px solid #dcdcdc;
+    margin-right: 1em;
+}
+
+.token_balance__button {
+    color: white;
+    background: #508abc;
+    border: 1px solid rgba(0, 0, 0, .1);
+    cursor: pointer;
+    width: 8em;
+}
+
+.token_balance__navigation {
+    display: flex;
+    justify-content: space-between;
+}
+
+.token_balance__inputs {
+    display: flex;
+    justify-content: space-around;
+}
+
+.token_balance__input_label {
+    font-weight: normal;
+    font-size: x-small;
+}
